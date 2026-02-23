@@ -614,23 +614,6 @@ static void copy_with_checked_indices(const GVArray &src,
   });
 }
 
-template<typename T>
-void copy_with_clamped_indices(const VArray<T> &src,
-                               const VArray<int> &indices,
-                               const IndexMask &mask,
-                               MutableSpan<T> dst)
-{
-  const int last_index = src.index_range().last();
-  devirtualize_varray2(src, indices, [&](const auto src, const auto indices) {
-    mask.foreach_index_optimized<int>(
-        [&](const int i) {
-          const int index = indices[i];
-          dst[i] = src[std::clamp(index, 0, last_index)];
-        },
-        exec_mode::grain_size(4096));
-  });
-}
-
 EvaluateAtIndexInput::EvaluateAtIndexInput(fn::Field<int> index_field,
                                            fn::GField value_field,
                                            AttrDomain value_field_domain)
@@ -698,12 +681,8 @@ const GeometryComponent *SampleIndexFunction::find_source_component(const Geomet
 
 SampleIndexFunction::SampleIndexFunction(GeometrySet geometry,
                                          fn::GField src_field,
-                                         const AttrDomain domain,
-                                         const bool clamp)
-    : src_geometry_(std::move(geometry)),
-      src_field_(std::move(src_field)),
-      domain_(domain),
-      clamp_(clamp)
+                                         const AttrDomain domain)
+    : src_geometry_(std::move(geometry)), src_field_(std::move(src_field)), domain_(domain)
 {
   src_geometry_.ensure_owns_direct_data();
 
@@ -742,14 +721,7 @@ void SampleIndexFunction::call(const IndexMask &mask,
     return;
   }
 
-  if (clamp_) {
-    attribute_math::to_static_type(type, [&]<typename T>() {
-      copy_with_clamped_indices(src_data_->typed<T>(), indices, mask, dst.typed<T>());
-    });
-  }
-  else {
-    copy_with_checked_indices(*src_data_, indices, mask, dst);
-  }
+  copy_with_checked_indices(*src_data_, indices, mask, dst);
 }
 
 EvaluateOnDomainInput::EvaluateOnDomainInput(fn::GField field, AttrDomain domain)

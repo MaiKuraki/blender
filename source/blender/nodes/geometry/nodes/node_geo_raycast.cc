@@ -350,7 +350,7 @@ static void node_geo_exec(GeoNodeExecParams params)
       bke::SocketValueVariant sampled_atribute;
       if (!execute_multi_function_on_value_variant(
               std::make_shared<bke::SampleIndexFunction>(
-                  std::move(target), std::move(field), bke::AttrDomain::Corner, false),
+                  std::move(target), std::move(field), bke::AttrDomain::Corner),
               {&nearest_corner},
               {&sampled_atribute},
               params.user_data(),

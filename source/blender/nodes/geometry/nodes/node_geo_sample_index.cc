@@ -86,13 +86,13 @@ static void node_geo_exec(GeoNodeExecParams params)
   SocketValueVariant index_value_variant = params.extract_input<SocketValueVariant>("Index");
   const CPPType &cpp_type = value_field.cpp_type();
 
+  const GeometryComponent *component = bke::SampleIndexFunction::find_source_component(geometry,
+                                                                                       domain);
+  if (!component) {
+    params.set_default_remaining_outputs();
+    return;
+  }
   if (index_value_variant.is_single()) {
-    const GeometryComponent *component = bke::SampleIndexFunction::find_source_component(geometry,
-                                                                                         domain);
-    if (!component) {
-      params.set_default_remaining_outputs();
-      return;
-    }
     /* Optimization for the case when the index is a single value. Here only that one index has to
      * be evaluated. */
     const int domain_size = component->attribute_domain_size(domain);
@@ -119,11 +119,34 @@ static void node_geo_exec(GeoNodeExecParams params)
     return;
   }
 
-  bke::SocketValueVariant output_value;
   std::string error_message;
+
+  if (use_clamp) {
+    bke::SocketValueVariant index_value_variant_copy = index_value_variant;
+    static auto clamp_fn = mf::build::SI3_SO<int, int, int, int>(
+        "Clamp",
+        [](int value, int min, int max) { return std::clamp(value, min, max); },
+        mf::build::exec_presets::SomeSpanOrSingle<0>());
+    const int domain_size = component->attribute_domain_size(domain);
+    bke::SocketValueVariant min_value = bke::SocketValueVariant::From(0);
+    bke::SocketValueVariant max_value = bke::SocketValueVariant::From(domain_size - 1);
+    if (!execute_multi_function_on_value_variant(
+            clamp_fn,
+            {&index_value_variant_copy, &min_value, &max_value},
+            {&index_value_variant},
+            params.user_data(),
+            error_message))
+    {
+      params.set_default_remaining_outputs();
+      params.error_message_add(NodeWarningType::Error, std::move(error_message));
+      return;
+    }
+  }
+
+  bke::SocketValueVariant output_value;
   if (!execute_multi_function_on_value_variant(
           std::make_shared<bke::SampleIndexFunction>(
-              std::move(geometry), std::move(value_field), domain, use_clamp),
+              std::move(geometry), std::move(value_field), domain),
           {&index_value_variant},
           {&output_value},
           params.user_data(),
