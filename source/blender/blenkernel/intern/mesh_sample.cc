@@ -60,8 +60,15 @@ void sample_point_attribute(const Span<int> corner_verts,
 
   const CPPType &type = src.type();
   attribute_math::to_static_type(type, [&]<typename T>() {
-    sample_point_attribute<T>(
-        corner_verts, corner_tris, tri_indices, bary_coords, src.typed<T>(), mask, dst.typed<T>());
+    if constexpr (!std::is_same_v<T, std::string>) {
+      sample_point_attribute<T>(corner_verts,
+                                corner_tris,
+                                tri_indices,
+                                bary_coords,
+                                src.typed<T>(),
+                                mask,
+                                dst.typed<T>());
+    }
   });
 }
 
@@ -454,12 +461,14 @@ void BaryWeightSampleFn::call(const IndexMask &mask,
   const IndexMask valid_mask = IndexMask::from_predicate(
       mask, memory, [&](const int i) { return triangle_indices[i] != -1; });
   attribute_math::to_static_type(dst.type(), [&]<typename T>() {
-    sample_corner_attribute<T>(corner_tris_,
-                               triangle_indices,
-                               bary_weights,
-                               source_data_->typed<T>(),
-                               valid_mask,
-                               dst.typed<T>());
+    if constexpr (!std::is_same_v<T, std::string>) {
+      sample_corner_attribute<T>(corner_tris_,
+                                 triangle_indices,
+                                 bary_weights,
+                                 source_data_->typed<T>(),
+                                 valid_mask,
+                                 dst.typed<T>());
+    }
   });
   dst.type().value_initialize_indices(dst.data(), valid_mask.complement(mask, memory));
 }
