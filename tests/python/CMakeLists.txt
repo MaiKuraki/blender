@@ -1391,6 +1391,11 @@ endif()
 
 if(TEST_SRC_DIR_EXISTS)
   add_blender_test(
+    bl_voxel_remesh
+    --python ${CMAKE_CURRENT_LIST_DIR}/sculpt_paint/voxel_remesh_test.py
+  )
+
+  add_blender_test(
     bl_sculpt_mask
     --python ${CMAKE_CURRENT_LIST_DIR}/sculpt_paint/mask_test.py
     --
