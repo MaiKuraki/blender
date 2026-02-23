@@ -339,8 +339,10 @@ void SVGExporter::export_grease_pencil_layer(pugi::xml_node layer_node,
 
     if (is_outline) {
       write_fill_color_attribute(element_node, color, opacity);
+      element_node.append_attribute("fill-rule").set_value("nonzero");
     }
     else {
+      element_node.append_attribute("fill-rule").set_value("evenodd");
       if (width) {
         write_stroke_color_attribute(element_node, color, opacity, round_cap);
       }
@@ -512,7 +514,6 @@ pugi::xml_node SVGExporter::write_path(pugi::xml_node node,
   }
 
   element_node.append_attribute("d").set_value(txt.c_str());
-  element_node.append_attribute("fill-rule").set_value("evenodd");
 
   return element_node;
 }
