@@ -339,6 +339,7 @@ void SVGExporter::export_grease_pencil_layer(pugi::xml_node layer_node,
 
     if (is_outline) {
       write_fill_color_attribute(element_node, color, opacity);
+      /* Outlines might self-overlap which creates visual holes with the `even-odd` fill rule. */
       element_node.append_attribute("fill-rule").set_value("nonzero");
     }
     else {
