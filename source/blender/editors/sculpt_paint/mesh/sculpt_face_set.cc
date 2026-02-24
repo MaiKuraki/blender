@@ -1830,7 +1830,8 @@ static void gesture_apply_mesh(gesture::GestureData &gesture_data, const IndexMa
 
           tls.positions.resize(face_indices.size());
           const MutableSpan<float3> face_centers = tls.positions;
-          calc_face_centers(mesh.faces(), corner_verts, positions_eval, face_indices, face_centers);
+          calc_face_centers(
+              mesh.faces(), corner_verts, positions_eval, face_indices, face_centers);
 
           tls.factors.resize(face_indices.size());
           const MutableSpan<float> factors = tls.factors;
@@ -1868,7 +1869,8 @@ static void gesture_apply_mesh(gesture::GestureData &gesture_data, const IndexMa
           bool any_updated = false;
 
           const Span<int> grids = nodes[i].grids();
-          const MutableSpan positions = gather_grids_positions(*ss.subdiv_ccg, grids, tls.positions);
+          const MutableSpan positions = gather_grids_positions(
+              *ss.subdiv_ccg, grids, tls.positions);
 
           tls.factors.resize(positions.size());
           const MutableSpan<float> factors_grid = tls.factors;
