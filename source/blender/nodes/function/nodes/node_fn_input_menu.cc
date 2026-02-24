@@ -8,6 +8,8 @@
 #include "UI_interface_layout.hh"
 #include "UI_resources.hh"
 
+#include "BKE_node_runtime.hh"
+
 namespace blender::nodes::node_fn_input_menu_cc {
 
 static void node_declare(NodeDeclarationBuilder &b)
