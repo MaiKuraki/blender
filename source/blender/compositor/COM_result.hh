@@ -621,33 +621,6 @@ BLI_INLINE_METHOD void Result::store_pixel(const int2 &texel, const T &pixel_val
   this->cpu_data().typed<T>()[this->get_pixel_index(texel)] = pixel_value;
 }
 
-BLI_INLINE int32_t wrap_coordinates(float u, int32_t size, const Extension extension_mode)
-{
-  if (u >= 0) {
-    if (u < float(size)) {
-      return int32_t(u);
-    }
-    switch (extension_mode) {
-      default: /* case ExtensionMode::Extend: */
-        return size - 1;
-      case Extension::Repeat:
-        return int32_t(uint32_t(u) % uint32_t(size));
-      case Extension::Clip:
-        return -1;
-    }
-  }
-  switch (extension_mode) {
-    default: /* case ExtensionMode::Extend: */
-      return 0;
-    case Extension::Repeat: {
-      int32_t x = int32_t(uint32_t(-floorf(u)) % uint32_t(size));
-      return x ? size - x : 0;
-    }
-    case Extension::Clip:
-      return -1;
-  }
-}
-
 BLI_INLINE math::InterpWrapMode map_extension_mode_to_wrap_mode(const Extension &mode)
 {
   switch (mode) {
@@ -677,10 +650,9 @@ BLI_INLINE_METHOD T Result::sample(const float2 &coordinates,
   const int2 size = domain_.data_size;
   const float2 texel_coordinates = coordinates * float2(size);
 
+  const math::InterpWrapMode extension_mode_x = map_extension_mode_to_wrap_mode(mode_x);
+  const math::InterpWrapMode extension_mode_y = map_extension_mode_to_wrap_mode(mode_y);
   if constexpr (is_same_any_v<T, float, float2, float3, float4, Color>) {
-    const math::InterpWrapMode extension_mode_x = map_extension_mode_to_wrap_mode(mode_x);
-    const math::InterpWrapMode extension_mode_y = map_extension_mode_to_wrap_mode(mode_y);
-
     T pixel_value = T(0);
     const float *buffer = static_cast<const float *>(this->cpu_data().data());
     float *output = nullptr;
@@ -732,8 +704,8 @@ BLI_INLINE_METHOD T Result::sample(const float2 &coordinates,
   }
   else {
     /* Non float types do not support interpolations and are always sampled in nearest. */
-    const int x = wrap_coordinates(texel_coordinates.x, size.x, mode_x);
-    const int y = wrap_coordinates(texel_coordinates.y, size.y, mode_y);
+    const int x = wrap_coord(texel_coordinates.x, size.x, extension_mode_x);
+    const int y = wrap_coord(texel_coordinates.y, size.y, extension_mode_y);
     if (x < 0 || y < 0) {
       return T(0);
     }
