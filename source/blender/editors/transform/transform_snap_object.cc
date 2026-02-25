@@ -60,7 +60,7 @@ static float4 occlusion_plane_create(float3 ray_start,
    * NOTE: The offset added to plane[3] was previously hardcoded as 0.01f
    * but that caused snapping to pass through occluding geometry at small
    * scales, so scale it by the view depth instead. Values of 1e-6f and
-   * above work for the scale factor, 1e-7f or smaller are lost to float 
+   * above work for the scale factor, 1e-7f or smaller are lost to float
    * precision. See: #154426. */
   const float depth = math::dot(ray_co - ray_start, ray_dir);
   const float scale_factor = 1e-5f;
