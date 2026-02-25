@@ -7,6 +7,7 @@
 #include "BKE_mesh.hh"
 #include "BKE_mesh_sample.hh"
 
+#include "BLI_array_utils.hh"
 #include "BLI_math_geom.h"
 #include "BLI_rand.hh"
 
@@ -470,8 +471,7 @@ void BaryWeightSampleFn::call(const IndexMask &mask,
       1, "Barycentric Weight");
   GMutableSpan dst = params.uninitialized_single_output(2, "Value");
   IndexMaskMemory memory;
-  const IndexMask valid_mask = IndexMask::from_predicate(
-      mask, memory, [&](const int i) { return triangle_indices[i] != -1; });
+  const IndexMask valid_mask = array_utils::indices_non_negative(mask, triangle_indices, memory);
   attribute_math::to_static_type(dst.type(), [&]<typename T>() {
     if constexpr (!std::is_same_v<T, std::string>) {
       sample_corner_attribute<T>(corner_tris_,
