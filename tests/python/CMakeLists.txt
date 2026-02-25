@@ -1398,6 +1398,12 @@ if(TEST_SRC_DIR_EXISTS)
   )
 
   add_blender_test(
+    bl_voxel_remesh_compare
+    ${TEST_SRC_DIR}/sculpting/voxel_remesh_compare.blend
+    --python ${CMAKE_CURRENT_LIST_DIR}/sculpt_paint/voxel_remesh_compare_test.py
+  )
+
+  add_blender_test(
     bl_sculpt_mask
     --python ${CMAKE_CURRENT_LIST_DIR}/sculpt_paint/mask_test.py
     --

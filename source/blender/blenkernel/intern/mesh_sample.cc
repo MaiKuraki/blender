@@ -166,6 +166,18 @@ static void sample_barycentric_weights(const Span<float3> vert_positions,
   });
 }
 
+void sample_barycentric_weights(const Span<float3> vert_positions,
+                                const Span<int> corner_verts,
+                                const Span<int3> corner_tris,
+                                const Span<int> tri_indices,
+                                const Span<float3> sample_positions,
+                                const IndexMask &mask,
+                                MutableSpan<float3> bary_coords)
+{
+  sample_barycentric_weights<false>(
+      vert_positions, corner_verts, corner_tris, tri_indices, sample_positions, mask, bary_coords);
+}
+
 template<bool check_indices = false>
 static void sample_nearest_corner(const Span<float3> vert_positions,
                                   const Span<int> corner_verts,
