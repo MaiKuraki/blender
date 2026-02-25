@@ -1684,6 +1684,7 @@ static Mesh *meshgl_to_mesh(MeshGL &mgl,
         set_material_from_map(
             out_to_in.ensure_face_map(), material_remaps, meshes, mesh_offsets, dst.span);
       }
+      dst.finish();
     }
 
     interpolate_corner_attributes(output_attrs,
