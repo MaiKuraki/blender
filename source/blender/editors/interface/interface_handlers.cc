@@ -5083,8 +5083,8 @@ static int ui_do_but_TEX(
     else if (ELEM(event->type, WHEELUPMOUSE, WHEELDOWNMOUSE) && (event->modifier & KM_CTRL)) {
       if (but->type == ButtonType::SearchMenu) {
         /* Disable value cycling for search buttons. This causes issues because the search data is
-         * moved to the "afterfuncs", but search updating requires it again or somethimes this
-         * event can be triguered twice in row without the button being refreshed. See #147539 and
+         * moved to the `afterfuncs`, but search updating requires it again or sometimes this
+         * event can be triggered twice in row without the button being refreshed. See #147539 and
          * #152976. */
       }
       else {

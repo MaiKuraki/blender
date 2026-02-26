@@ -55,7 +55,7 @@ def download_asset_file(
 
     :param save_to: the path on disk where to download to. While the download is
         pending, ".part" will be appended to the filename. When the download
-        finishes succesfully, it is renamed to the final path.
+        finishes successfully, it is renamed to the final path.
     """
     try:
         downloader = _asset_downloaders[asset_library_url]
@@ -107,7 +107,7 @@ def download_preview(
 
     :param dst_filepath: the path on disk where to download to. While the
         download is pending, ".part" will be appended to the filename. When the
-        download finishes succesfully, it is renamed to the final path.
+        download finishes successfully, it is renamed to the final path.
     """
     import time
 
