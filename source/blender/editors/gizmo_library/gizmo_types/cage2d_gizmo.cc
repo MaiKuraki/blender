@@ -1302,8 +1302,8 @@ static wmOperatorStatus gizmo_cage2d_modal(bContext *C,
             continue;
           }
         }
-        /* Original cursor position does not exactly lie on the cage boundary due to margin. */
-        size_new[i] = delta_curr / (signf(delta_orig) * 0.5f * dims[i] - pivot[i]);
+        /* Ratio of cursor-to-pivot distances (current / original). */
+        size_new[i] = size_orig[i] * (delta_curr / delta_orig);
       }
     }
 
