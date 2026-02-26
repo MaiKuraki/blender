@@ -1499,6 +1499,7 @@ if(WITH_UI_TESTS)
     test_sculpt.mask_expand_and_invert
     test_sculpt.mask_gestures
     test_sculpt.trim_gestures
+    test_sculpt.primitive_tool_add
     test_tools.sculpt_mode_toolbar
     test_undo.compositor_make_group
     test_undo.text_editor_edit_mode_mix
