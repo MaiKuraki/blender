@@ -155,7 +155,15 @@ static void WIDGETGROUP_camera_refresh(const bContext *C, wmGizmoGroup *gzgroup)
     WM_gizmo_set_matrix_location(cagzgroup->dop_dist, ob->object_to_world().location());
     WM_gizmo_set_matrix_rotation_from_yz_axis(
         cagzgroup->dop_dist, ob->object_to_world().ptr()[1], dir);
-    WM_gizmo_set_scale(cagzgroup->dop_dist, ca->drawsize);
+
+    /* TODO: investigate why this doesn't work. */
+    if (false) {
+      WM_gizmo_set_scale(cagzgroup->dop_dist, ca->drawsize);
+    }
+    else {
+      mul_v3_fl(cagzgroup->dop_dist->matrix_basis[0], ca->drawsize);
+      mul_v3_fl(cagzgroup->dop_dist->matrix_basis[1], ca->drawsize);
+    }
     WM_gizmo_set_flag(cagzgroup->dop_dist, WM_GIZMO_HIDDEN, false);
 
     /* Need to set property here for undo. TODO: would prefer to do this in _init. */
