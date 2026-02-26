@@ -59,7 +59,9 @@ def download_asset_file(
     """
     try:
         downloader = _asset_downloaders[asset_library_url]
-        assert downloader.local_path == asset_library_local_path, "This code assumes that remote asset libraries do not move on the local disk"
+        assert downloader.local_path == asset_library_local_path, (
+            "This code assumes that remote asset libraries do not move on the local disk"
+        )
     except KeyError:
         downloader = AssetDownloader(
             asset_library_url,
@@ -124,7 +126,9 @@ def download_preview(
 
     try:
         downloader = _preview_downloaders[asset_library_url]
-        assert downloader.local_path == asset_library_local_path, "This code assumes that remote asset libraries do not move on the local disk"
+        assert downloader.local_path == asset_library_local_path, (
+            "This code assumes that remote asset libraries do not move on the local disk"
+        )
     except KeyError:
         downloader = AssetDownloader(
             asset_library_url,
